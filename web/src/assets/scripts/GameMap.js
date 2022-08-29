@@ -1,4 +1,5 @@
 import { AcGameObject } from "./AcGameObject";
+import { Snake } from "./Snake";
 import { Wall } from "./Wall";
 
 export class GameMap extends AcGameObject {
@@ -10,10 +11,16 @@ export class GameMap extends AcGameObject {
         this.L = 0;
 
         this.rows = 13;
-        this.cols = 13;
+        // 避免两条蛇在同一格相遇的情形
+        this.cols = 14;
 
         this.inner_walls_count = 20;
         this.walls = [];
+
+        this.snakes = [
+            new Snake({id: 0, color: "#4876EC", r: this.rows - 2, c: 1}, this),
+            new Snake({id: 1, color: "#F94848", r: 1, c: this.cols - 2}, this),
+        ];
     }
 
     // 检查两个起点是否连通
@@ -43,11 +50,11 @@ export class GameMap extends AcGameObject {
 
         // 四周加上障碍物
         for (let r = 0; r < this.rows; r++) {
-            g[r][0] = g[r][this.rows - 1] = true;
+            g[r][0] = g[r][this.cols - 1] = true;
         }
 
         for (let c = 0; c < this.cols; c++) {
-            g[0][c] = g[this.cols - 1][c] = true;
+            g[0][c] = g[this.rows - 1][c] = true;
         }
 
         // 创建随机障碍物
@@ -55,14 +62,14 @@ export class GameMap extends AcGameObject {
             for (let j = 0; j < 1000; j++) {
                 let r = parseInt(Math.random() * this.rows);
                 let c = parseInt(Math.random() * this.cols);
-                if (g[r][c] || g[c][r]) {
+                if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) {
                     continue;
                 }
                 // 不覆盖两个起点
                 if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2) {
                     continue;
                 }
-                g[r][c] = g[c][r] = true;
+                g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
                 break;
             }
         }
@@ -84,12 +91,38 @@ export class GameMap extends AcGameObject {
         return true;
     }
 
+    add_listening_events() {
+        this.ctx.canvas.focus();
+
+        const [snake0, snake1] = this.snakes;
+        this.ctx.canvas.addEventListener("keydown", e => {
+            if (e.key === 'w') {
+                snake0.set_direction(0);
+            } else if (e.key === 'd') {
+                snake0.set_direction(1);
+            } else if (e.key === 's') {
+                snake0.set_direction(2);
+            } else if (e.key === 'a') {
+                snake0.set_direction(3);
+            } else if (e.key === 'ArrowUp') {
+                snake1.set_direction(0);
+            } else if (e.key === 'ArrowRight') {
+                snake1.set_direction(1);
+            } else if (e.key === 'ArrowDown') {
+                snake1.set_direction(2);
+            } else if (e.key === 'ArrowLeft') {
+                snake1.set_direction(3);
+            }
+        });
+    }
+
     start() {
         for (let i = 0; i < 1000; i++) {
             if (this.create_walls()) {
                 break;
             }
         }
+        this.add_listening_events();
     }
 
     update_size() {
@@ -98,8 +131,54 @@ export class GameMap extends AcGameObject {
         this.ctx.canvas.height = this.L * this.rows;
     }
 
+    // 判断两条蛇是否都准备好下一回合了
+    check_ready() {
+        for (const snake of this.snakes) {
+            if (snake.status !== "idle") {
+                return false;
+            }
+            if (snake.direction === -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 让两条蛇进入下一回合
+    next_step() {
+        for (const snake of this.snakes) {
+            snake.next_step();
+        }
+    }
+
+    // 合法检测
+    check_valid(cell) {
+        for (const wall of this.walls) {
+            if (wall.r == cell.r && wall.c == cell.c) {
+                return false;
+            }
+        }
+
+        for (const snake of this.snakes) {
+            let k = snake.cells.length;
+            //  当蛇尾会前进的时候，蛇尾不要判断
+            if (!snake.check_tail_increasing()) {
+                k--;
+            }
+            for (let i = 0; i < k; i++) {
+                if (snake.cells[i].r === cell.r && snake.cells[i].c === cell.c) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     update() {
         this.update_size();
+        if (this.check_ready()) {
+            this.next_step();
+        }
         this.render();
     }
 

@@ -34,7 +34,7 @@ public class RemoveServiceImpl implements RemoveService {
             res.put("error_message", "Your bot does not exist or has been removed!");
             return res;
         }
-        if (bot.getUserId().equals(user.getId())) {
+        if (!bot.getUserId().equals(user.getId())) {
             res.put("error_message", "You do not have the right to delete!");
             return res;
         }

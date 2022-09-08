@@ -13,7 +13,7 @@ public class SelectController {
     @Autowired
     private SelectService selectService;
 
-    @GetMapping("/user/bot/select")
+    @GetMapping("/user/bot/select/")
     List<Bot> select() {
         return selectService.select();
     }

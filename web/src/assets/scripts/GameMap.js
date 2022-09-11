@@ -24,64 +24,7 @@ export class GameMap extends AcGameObject {
         ];
     }
 
-    // // 检查两个起点是否连通
-    // check_connectivity(g, sx, sy, ex, ey) {
-    //     if (sx == ex && sy == ey) {
-    //         return true;
-    //     }
-    //     g[sx][sy] = true;
-    //     let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
-    //     for (let i = 0; i < 4; i++) {
-    //         let x = sx + dx[i], y = sy + dy[i];
-    //         if (!g[x][y] && this.check_connectivity(g, x, y, ex, ey)) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
     create_walls() {
-        // const g = [];
-        // for (let r = 0; r < this.rows; r++) {
-        //     g[r] = [];
-        //     for (let c = 0; c < this.cols; c++) {
-        //         g[r][c] = false;
-        //     }
-        // }
-
-        // // 四周加上障碍物
-        // for (let r = 0; r < this.rows; r++) {
-        //     g[r][0] = g[r][this.cols - 1] = true;
-        // }
-
-        // for (let c = 0; c < this.cols; c++) {
-        //     g[0][c] = g[this.rows - 1][c] = true;
-        // }
-
-        // // 创建随机障碍物
-        // for (let i = 0; i < this.inner_walls_count; i++) {
-        //     for (let j = 0; j < 1000; j++) {
-        //         let r = parseInt(Math.random() * this.rows);
-        //         let c = parseInt(Math.random() * this.cols);
-        //         if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) {
-        //             continue;
-        //         }
-        //         // 不覆盖两个起点
-        //         if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2) {
-        //             continue;
-        //         }
-        //         g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
-        //         break;
-        //     }
-        // }
-
-        // const copy_g = JSON.parse(JSON.stringify(g));
-
-
-        // if (!this.check_connectivity(copy_g, this.rows - 2, 1, 1, this.cols - 2)) {
-        //     return false;
-        // }
-
         const g = this.store.state.pk.game_map;
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
@@ -95,35 +38,28 @@ export class GameMap extends AcGameObject {
 
     add_listening_events() {
         this.ctx.canvas.focus();
-
-        const [snake0, snake1] = this.snakes;
         this.ctx.canvas.addEventListener("keydown", e => {
+            let d = -1;
             if (e.key === 'w') {
-                snake0.set_direction(0);
+                d  = 0;
             } else if (e.key === 'd') {
-                snake0.set_direction(1);
+                d = 1;
             } else if (e.key === 's') {
-                snake0.set_direction(2);
+                d = 2;
             } else if (e.key === 'a') {
-                snake0.set_direction(3);
-            } else if (e.key === 'ArrowUp') {
-                snake1.set_direction(0);
-            } else if (e.key === 'ArrowRight') {
-                snake1.set_direction(1);
-            } else if (e.key === 'ArrowDown') {
-                snake1.set_direction(2);
-            } else if (e.key === 'ArrowLeft') {
-                snake1.set_direction(3);
+                d = 3;
+            } 
+
+            if (d >= 0) {
+                this.store.state.pk.socket.send(JSON.stringify({
+                    event: "move",
+                    direction: d,
+                }));
             }
         });
     }
 
     start() {
-        // for (let i = 0; i < 1000; i++) {
-        //     if (this.create_walls()) {
-        //         break;
-        //     }
-        // }
         this.create_walls();
         this.add_listening_events();
     }

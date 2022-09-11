@@ -17,10 +17,12 @@ export default {
         let canvas = ref(null);
 
         onMounted(() => {
-            new GameMap(canvas.value.getContext('2d'), parent.value, store)
+            store.commit(
+                "updateGameObject", 
+                new GameMap(canvas.value.getContext('2d'), parent.value, store)
+            );
         });
         
-
         return {
             parent, 
             canvas

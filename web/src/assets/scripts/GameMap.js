@@ -1,6 +1,6 @@
-import { AcGameObject } from "./AcGameObject";
-import { Snake } from "./Snake";
-import { Wall } from "./Wall";
+import {AcGameObject} from "./AcGameObject";
+import {Snake} from "./Snake";
+import {Wall} from "./Wall";
 
 export class GameMap extends AcGameObject {
     constructor(ctx, parent, store) {
@@ -41,14 +41,14 @@ export class GameMap extends AcGameObject {
         this.ctx.canvas.addEventListener("keydown", e => {
             let d = -1;
             if (e.key === 'w') {
-                d  = 0;
+                d = 0;
             } else if (e.key === 'd') {
                 d = 1;
             } else if (e.key === 's') {
                 d = 2;
             } else if (e.key === 'a') {
                 d = 3;
-            } 
+            }
 
             if (d >= 0) {
                 this.store.state.pk.socket.send(JSON.stringify({

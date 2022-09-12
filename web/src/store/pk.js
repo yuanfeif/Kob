@@ -14,9 +14,7 @@ export default {
         gameObject: null,
         loser: "none", // none, all, A, B
     },
-    getters: {
-
-    },
+    getters: {},
     mutations: {
         updateSocket(state, socket) {
             state.socket = socket;
@@ -44,9 +42,6 @@ export default {
             state.loser = loser;
         }
     },
-    actions: {
-        
-    },
-    modules: {
-    }
+    actions: {},
+    modules: {}
 }

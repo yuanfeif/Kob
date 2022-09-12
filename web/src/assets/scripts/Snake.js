@@ -1,7 +1,7 @@
-import { AcGameObject } from "./AcGameObject";
-import { Cell } from "./Cell";
+import {AcGameObject} from "./AcGameObject";
+import {Cell} from "./Cell";
 
-export class Snake extends AcGameObject{
+export class Snake extends AcGameObject {
     constructor(info, gamemap) {
         super();
 
@@ -14,7 +14,7 @@ export class Snake extends AcGameObject{
 
         // 下一步的目标位置
         this.next_cell = null;
-        
+
         // 蛇每秒走5个格子
         this.speed = 5;
 
@@ -53,7 +53,7 @@ export class Snake extends AcGameObject{
     }
 
     start() {
-        
+
     }
 
     set_direction(d) {

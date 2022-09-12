@@ -35,7 +35,7 @@ export class AcGameObject {
 
 let last_timestamp; // 上一次执行的时刻
 
-const step = timestamp => { 
+const step = timestamp => {
     for (let obj of AC_GAME_OBJECTS) {
         if (!obj.has_called_start) {
             obj.has_called_start = true;

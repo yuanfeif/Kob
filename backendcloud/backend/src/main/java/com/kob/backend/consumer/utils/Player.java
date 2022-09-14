@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class Player {
     private Integer id;
+    // -1表示手动，否则表示AI
+    private Integer botId;
+    private String botCode;
     private Integer sx;
     private Integer sy;
     private List<Integer> steps;

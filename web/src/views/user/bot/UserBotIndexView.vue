@@ -45,8 +45,8 @@
                                     <div class="modal-footer">
                                         <div class="error-message">{{ bot_added.error_message }}</div>
                                         <button type="button" class="btn btn-primary" @click="add_bot">Create</button>
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-secondary" 
+                                            data-bs-dismiss="modal" @click="cancel">Cancel</button>
                                     </div>
                                 </div>
                             </div>
@@ -95,17 +95,16 @@
                                                         </div>
                                                         <div class="mb-3">
                                                             <label for="add-bot-code" class="form-label">Code</label>
-                                                            <VAceEditor v-model:value="bot.content"
-                                                                @init="editorInit" lang="c_cpp" theme="textmate"
-                                                                style="height: 300px" />
+                                                            <VAceEditor v-model:value="bot.content" @init="editorInit"
+                                                                lang="c_cpp" theme="textmate" style="height: 300px" />
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <div class="error-message">{{ bot.error_message }}</div>
                                                         <button type="button" class="btn btn-primary"
                                                             @click="update_bot(bot)">Modify and Save</button>
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-secondary" 
+                                                            data-bs-dismiss="modal" @click="cancel">Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -170,7 +169,7 @@ export default {
         refresh_bots();
 
         const add_bot = () => {
-            bot_added.error_message = "",
+            bot_added.error_message = "";
                 $.ajax({
                     url: "http://127.0.0.1:3000/user/bot/add/",
                     type: "post",
@@ -239,12 +238,20 @@ export default {
             })
         }
 
+        const cancel = () => {
+            bot_added.title = "";
+            bot_added.description = "";
+            bot_added.content = "";
+            refresh_bots();
+        }
+
         return {
             bots,
             bot_added,
             add_bot,
             update_bot,
             remove_bot,
+            cancel,
         }
     }
 }
